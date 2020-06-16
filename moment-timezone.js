@@ -164,24 +164,6 @@
 				untils = this.untils,
 				i;
 
-			if(target > untils[untils.length - 2]) {
-				var from = moment(untils[untils.length - 2]).year();
-				var to = moment(target).year();
-				var data = null;
-				$.ajax({
-					url: "/timezone/"+from+"/"+to+"?timezone=" + this.name,
-					async: false,
-					timeout: 15000,
-					success: function (_data) {
-						data = _data;
-					}
-				});
-
-				moment.tz.extend(data);
-			}
-
-			untils = this.untils;
-
 			for (i = 0; i < untils.length; i++) {
 				if (target < untils[i]) {
 					return i;
@@ -232,8 +214,7 @@
 		},
 
 		utcOffset : function (mom) {
-			var index = this._index(mom);
-			return this.offsets[index];
+			return this.offsets[this._index(mom)];
 		}
 	};
 
@@ -440,41 +421,6 @@
 		}
 	}
 
-	function extendZone (packed) {
-		var i, name, split, normalized;
-
-		if (typeof packed === "string") {
-			packed = [packed];
-		}
-
-		for (i = 0; i < packed.length; i++) {
-			split = packed[i].split('|');
-			name = split[0];
-			normalized = normalizeName(name);
-			if (!(zones[normalized] instanceof Zone)) {
-				zones[normalized] = moment.tz.unpack(zones[normalized]);
-			}
-			var unpackedZone = zones[normalized];
-			var unpackedExtend = moment.tz.unpack(packed[i]);
-
-			var zoneUntils = unpackedZone.untils;
-			for(var _i = unpackedZone.untils.length - 1; _i >= 0; --_i) {
-				if(unpackedZone.untils[_i] === unpackedExtend.untils[0]) {
-					unpackedZone.untils.splice(_i, zoneUntils.length);
-					unpackedZone.untils = unpackedZone.untils.concat(unpackedExtend.untils);
-
-					unpackedZone.abbrs.splice(_i, unpackedZone.abbrs.length);
-					unpackedZone.abbrs = unpackedZone.abbrs.concat(unpackedExtend.abbrs);
-
-					unpackedZone.offsets.splice(_i, unpackedZone.offsets.length);
-					unpackedZone.offsets = unpackedZone.offsets.concat(unpackedExtend.offsets);
-
-					break;
-				}
-			}
-		}
-	}
-
 	function getZone (name, caller) {
 
 		name = normalizeName(name);
@@ -631,7 +577,6 @@
 	tz._names       = names;
 	tz._countries	= countries;
 	tz.add          = addZone;
-	tz.extend       = extendZone;
 	tz.link         = addLink;
 	tz.load         = loadData;
 	tz.zone         = getZone;
