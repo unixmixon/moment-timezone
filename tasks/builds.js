@@ -23,6 +23,7 @@ module.exports = function (grunt) {
 		data = JSON.stringify(data, null, '\t');
 		data = data.split('\n').join('\n\t');
 		data = 'loadData(' + data + ');\n';
+		data += '\n\tmoment.tz.start = ' + start + ';\n\tmoment.tz.end = ' + end + ';';
 
 		source = source.replace('// INJECT DATA', data);
 

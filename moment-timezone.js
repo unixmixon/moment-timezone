@@ -164,6 +164,17 @@
 				untils = this.untils,
 				i;
 
+			if(untils.length && untils.length > 2) {
+				var year = 31557600000,
+					year28 = year * 28;
+				if( target > untils[untils.length - 2] &&
+					parseInt( untils[untils.length - 2] / year + 1970, 10 ) === moment.tz.end
+				) {
+					var numOf28Years = Math.ceil((target - untils[untils.length - 2]) / year28);
+					target -= numOf28Years * year28;
+				}
+			}
+
 			for (i = 0; i < untils.length; i++) {
 				if (target < untils[i]) {
 					return i;
